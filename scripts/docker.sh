@@ -39,8 +39,8 @@ rm -f "$INSTALL_SCRIPT"
 printf "Removed installer script ... ${GREEN}OK${NC}\n"
 
 if command -v docker &>/dev/null; then
-	run_step "Adding $USER to docker group" usermod -aG docker "$USER"
-	printf "Docker installed successfully. Please log out and log back in to use Docker as non-root.\n"
+	run_step "Adding avan to docker group" usermod -aG docker avan
+	printf "Docker installed successfully. Please relogin.\n"
 else
 	printf "Docker installation failed.\n"
 	exit 1
