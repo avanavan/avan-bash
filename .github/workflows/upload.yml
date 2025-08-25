@@ -24,7 +24,7 @@ jobs:
           echo "provider = Cloudflare" >> ~/.config/rclone/rclone.conf
           echo "access_key_id = ${{ secrets.ACCESS_KEY_ID }}" >> ~/.config/rclone/rclone.conf
           echo "secret_access_key = ${{ secrets.SECRET_ACCESS_KEY }}" >> ~/.config/rclone/rclone.conf
-          echo "endpoint = https://$(echo ${{ secrets.CLOUDFLARE_ID }}).r2.cloudflarestorage.com" >> ~/.config/rclone/rclone.conf
+          echo "endpoint = "${{ secrets.CLOUDFLARE_ID }}).r2.cloudflarestorage.com" >> ~/.config/rclone/rclone.conf
           
       - name: Upload to Cloudflare R2
         run: |
