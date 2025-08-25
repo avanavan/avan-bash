@@ -12,25 +12,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         
-      - name: Install rclone
-        run: |
-          curl https://rclone.org/install.sh | sudo bash
-          
-      - name: Configure rclone
-        run: |
-          mkdir -p ~/.config/rclone
-          echo "[r2]" > ~/.config/rclone/rclone.conf
-          echo "type = s3" >> ~/.config/rclone/rclone.conf
-          echo "provider = Cloudflare" >> ~/.config/rclone/rclone.conf
-          echo "access_key_id = ${{ secrets.ACCESS_KEY_ID }}" >> ~/.config/rclone/rclone.conf
-          echo "secret_access_key = ${{ secrets.SECRET_ACCESS_KEY }}" >> ~/.config/rclone/rclone.conf
-          echo "endpoint = "${{ secrets.CLOUDFLARE_ID }}.r2.cloudflarestorage.com" >> ~/.config/rclone/rclone.conf
-          
-      - name: Upload to Cloudflare R2
-        run: |
-          rclone copy scripts/ r2:${{ secrets.BUCKET }}/scripts/ --progress
-          
-      - name: Display download URLs
-        run: |
-          echo "Files uploaded successfully!"
-          echo "Download URL: https://downloads.avanlcy.hk/scripts/"
+      - uses: ryand56/r2-upload-action@latest
+        with:
+          r2-account-id: ${{ secrets.CLOUDFLARE_ID }}
+          r2-access-key-id: ${{ secrets.ACCESS_KEY_ID }}
+          r2-secret-access-key: ${{ secrets.SECRET_ACCESS_KEY }}
+          r2-bucket: ${{ secrets.BUCKET }}
+          source-dir: scripts
+          destination-dir: scripts
