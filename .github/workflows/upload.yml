@@ -15,7 +15,6 @@ jobs:
       - name: Upload to S3
         uses: shallwefootball/upload-s3-action@master
         with:
-          destination_dir: scripts
           endpoint: ${{ secrets.ENDPOINT }}
           aws_bucket: ${{ secrets.BUCKET }}
           source_dir: scripts/
