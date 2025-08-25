@@ -1,4 +1,4 @@
-name: upload to s3
+name: upload
 
 on:
   push:
@@ -6,17 +6,31 @@ on:
   workflow_dispatch:
 
 jobs:
-  upload-to-s3:
+  upload-to-r2:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Upload to S3
-        uses: shallwefootball/upload-s3-action@master
-        with:
-          endpoint: downloads
-          aws_bucket: ${{ secrets.BUCKET }}
-          source_dir: scripts/
-          aws_key_id: ${{ secrets.ACCESS_KEY_ID }}
-          aws_secret_access_key: ${{ secrets.SECRET_ACCESS_KEY }}
+        
+      - name: Install rclone
+        run: |
+          curl https://rclone.org/install.sh | sudo bash
+          
+      - name: Configure rclone
+        run: |
+          mkdir -p ~/.config/rclone
+          echo "[r2]" > ~/.config/rclone/rclone.conf
+          echo "type = s3" >> ~/.config/rclone/rclone.conf
+          echo "provider = Cloudflare" >> ~/.config/rclone/rclone.conf
+          echo "access_key_id = ${{ secrets.ACCESS_KEY_ID }}" >> ~/.config/rclone/rclone.conf
+          echo "secret_access_key = ${{ secrets.SECRET_ACCESS_KEY }}" >> ~/.config/rclone/rclone.conf
+          echo "endpoint = https://$(echo ${{ secrets.CLOUDFLARE_ID }}).r2.cloudflarestorage.com" >> ~/.config/rclone/rclone.conf
+          
+      - name: Upload to Cloudflare R2
+        run: |
+          rclone copy scripts/ r2:${{ secrets.BUCKET }}/scripts/ --progress
+          
+      - name: Display download URLs
+        run: |
+          echo "Files uploaded successfully!"
+          echo "Download URL: https://downloads.avanlcy.hk/scripts/"
