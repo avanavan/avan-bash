@@ -36,6 +36,7 @@ detect_os() {
         . /etc/os-release
         ID_LC=$(echo "$ID" | tr '[:upper:]' '[:lower:]')
         VERSION_ID_LC=${VERSION_ID:-}
+        ID_LIKE=${ID_LIKE:-}
         echo "$ID_LC" "$VERSION_ID_LC" "$ID_LIKE"
         return 0
     fi
@@ -82,6 +83,8 @@ install_deb_from_github() {
 
 main() {
     read -r ID VERSION ID_LIKE < <(detect_os)
+    # Ensure ID_LIKE has a value to prevent "unbound variable" errors
+    ID_LIKE=${ID_LIKE:-""}
 
     case "$ID" in
         debian)
