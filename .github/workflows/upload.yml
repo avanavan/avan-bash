@@ -1,0 +1,23 @@
+name: upload to s3
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  upload-to-r2:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Upload to S3
+        uses: shallwefootball/upload-s3-action@master
+        with:
+          destination_dir: scripts
+          endpoint: ${{ secrets.ENDPOINT }}
+          aws_bucket: ${{ secrets.BUCKET }}
+          source_dir: scripts/*
+          aws_key_id: ${{ secrets.ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.SECRET_ACCESS_KEY }}

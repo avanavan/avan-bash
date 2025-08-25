@@ -1,49 +1,33 @@
-#!/bin/bash
 
+#!/bin/bash
 set -euo pipefail
 
 USERNAME="avan"
 SSH_DIR="/home/$USERNAME/.ssh"
 KEYS_URL="https://github.com/avanavan.keys"
 
-GREEN="\e[32m"
-RED="\e[31m"
-NC="\e[0m"
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 
-spinner() {
-    local pid=$1
-    local message=$2
-    local delay=0.1
-    local spin='|/-\'
-    local i=0
-
-    while kill -0 "$pid" 2>/dev/null; do
-        printf "\r%s %c" "$message" "${spin:i++%${#spin}:1}"
-        sleep $delay
-    done
-}
-
-run_step() {
-    local message="$1"
-    shift
-
-    ("$@" >/dev/null 2>&1) &
-    local pid=$!
-
-    spinner $pid "$message"
-    wait $pid
-    local status=$?
-
-    # Clear spinner line completely
-    printf "\r\033[K"
-
-    if [ $status -eq 0 ]; then
-        printf "%s ... ${GREEN}OK${NC}\n" "$message"
-    else
-        printf "%s ... ${RED}FAILED${NC}\n" "$message"
-        exit 1
+for dep in curl sudo wget; do
+    if ! command -v "$dep" &>/dev/null; then
+        echo "Dependency $dep not found, attempting to install..."
+        if command -v apt-get &>/dev/null; then
+            apt-get update && apt-get install -y "$dep"
+        elif command -v yum &>/dev/null; then
+            yum install -y "$dep"
+        else
+            echo "No supported package manager found for $dep. Please install it manually."
+            exit 1
+        fi
     fi
-}
+done
+
+LIB_SH="$SCRIPT_DIR/lib.sh"
+if [ ! -f "$LIB_SH" ]; then
+    echo "lib.sh not found, downloading from remote..."
+    curl -fsSL -o "$LIB_SH" https://downloads.avanlcy.hk/scripts/lib.sh
+fi
+source "$LIB_SH"
 
 if [ "$EUID" -ne 0 ]; then
     echo "Please run as root"
