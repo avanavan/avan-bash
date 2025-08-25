@@ -5,8 +5,8 @@ SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 
 LIB_SH="$SCRIPT_DIR/lib.sh"
 if [ ! -f "$LIB_SH" ]; then
-    echo "lib.sh not found in $SCRIPT_DIR"
-    exit 1
+	echo "lib.sh not found, downloading from remote..."
+	curl -fsSL -o "$LIB_SH" https://downloads.avanlcy.hk/scripts/lib.sh
 fi
 source "$LIB_SH"
 
